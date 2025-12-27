@@ -1,62 +1,30 @@
 const express = require('express');
 
-const { adminAuth, userAuth } = require('./middleware/auth');
-
 const app = express();
 
 
-// app.use('/admin', (req, res, next) => {
-//     const token = "abcd"
-//     isAuthorized = token === "abc";
-//     if (!isAuthorized) {
-//         return res.status(403).send('Unauthorised Access');
-//     } else {
-//         next();
-//     }
-
+// app.get('/user/getProfile', (req, res, next) => {
+//     throw new Error('Simulated Server Error');
+//     res.send('Profile Data Fetched Successfully');
 // });
 
-app.get('/admin/getUserData', adminAuth, (req, res, next) => {
-    // const token = "abc"
-    // isAuthorized = token === "abc";
-    // if (!isAuthorized) {
-    //     return res.status(403).send('Unauthorised Access');
-    // } else {
-    //     res.send('Admin Data');
-    // }
-
-    res.send('Admin Data');
-});
+// app.use((err, req, res, next) => {
+//     console.error(err.stack);
+//     res.status(500).send('Something broke!');
+// });
 
 
-app.delete('/admin/deleteUser', adminAuth, (req, res, next) => {
-    // const token = "abc"
-    // isAuthorized = token === "abc";
-    // if (!isAuthorized) {
-    //     return res.status(403).send('Unauthorised Access');
-    // } else {
-    //     res.send('User Deleted');
-    // }
-
-    res.send('User Deleted');
-});
+/////////////////////////. or. ///////////////////////
 
 
-app.get('/user/getProfile', userAuth, (req, res, next) => {
-    // const token = "abc"
-    // isAuthorized = token === "abc";
-    // if (!isAuthorized) {
-    //     return res.status(403).send('Unauthorised Access');
-    // } else {
-    //     res.send('Profile Data');
-    // }
-
-    res.send('Profile Data');
-});
-
-
-app.post('/user/createProfile', (req, res, next) => {
-    res.send('Profile Data Created');
+app.get('/user/getProfile', (req, res, next) => {
+    try {
+        throw new Error('Simulated Server Error');
+        res.send('Profile Data Fetched Successfully');
+    }catch (err) {
+        res.status(500).send('Something went wrong!');
+    }
+    
 });
 
 app.listen(7777, () => {
