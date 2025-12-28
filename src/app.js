@@ -3,8 +3,12 @@ const { connectDb } = require('./config/database');
 const { UserModel } = require('./models/user');
 const { validateSignUpData } = require('./utils/validation');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
+
 
 const app = express();
+app.use(cookieParser());
 
 //creating a middle ware to convert incoming json request to javascript object
 app.use(express.json());
@@ -31,27 +35,49 @@ app.post('/signup', async (req, res) => {
 });
 
 app.post('/login', async (req, res) => {
-
-    const {emailId, password } = req.body;
-
+    const { emailId, password } = req.body;
     try {
 
         const user = await UserModel.findOne({ emailId: emailId });
 
         if (!user) {
-            return  res.status(404).send({ message: "User not found" });
+            return res.status(404).send({ message: "User not found" });
         }
 
         const isPasswordMatch = await bcrypt.compare(password, user.password);
-        
+
         if (!isPasswordMatch) {
             return res.status(400).send({ message: "Invalid credentials" });
-        }else{
+        } else {
+            const token = jwt.sign({ _id: user._id }, "devTinder@831$");
+            res.cookie('token', token)
             res.send("Login successful");
         }
-       
+
     } catch (err) {
         res.status(500).send({ message: "Error creating user", error: err.message });
+    }
+});
+
+
+app.get('/profile', async (req, res) => {
+    try {
+        const cookies = req.cookies;
+        const { token } = cookies;
+        if (!token) {
+            return res.status(401).send({ message: "Unauthorized: No token provided" });
+        }
+        const decodedMessage = jwt.verify(token, "devTinder@831$");
+        console.log(decodedMessage, "decoded messagee");
+        const userId = decodedMessage._id;
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(404).send({ message: "User not found" });
+        } else {
+            res.send(user);
+        }
+    } catch (err) {
+        res.status(500).send({ message: "Error fetching user", error: err.message });
     }
 });
 
