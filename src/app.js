@@ -2,7 +2,7 @@ const express = require('express');
 const { connectDb } = require('./config/database');
 const { UserModel } = require('./models/user');
 const { validateSignUpData } = require('./utils/validation');
-const  bcrypt  = require('bcrypt');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
@@ -25,6 +25,31 @@ app.post('/signup', async (req, res) => {
     try {
         await user.save();
         res.send("User created successfully")
+    } catch (err) {
+        res.status(500).send({ message: "Error creating user", error: err.message });
+    }
+});
+
+app.post('/login', async (req, res) => {
+
+    const {emailId, password } = req.body;
+
+    try {
+
+        const user = await UserModel.findOne({ emailId: emailId });
+
+        if (!user) {
+            return  res.status(404).send({ message: "User not found" });
+        }
+
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+        
+        if (!isPasswordMatch) {
+            return res.status(400).send({ message: "Invalid credentials" });
+        }else{
+            res.send("Login successful");
+        }
+       
     } catch (err) {
         res.status(500).send({ message: "Error creating user", error: err.message });
     }
