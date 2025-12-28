@@ -73,11 +73,23 @@ app.delete('/user', async (req, res) => {
 
 //update user api
 
-app.patch('/user', async (req, res) => {
-    const userId = req.body.userId;
+app.patch('/user/:userId', async (req, res) => {
+    const userId = req.params?.userId;
     const data = req.body
     try {
-        const user = await UserModel.findByIdAndUpdate(userId, data, { returnDocument: 'before' });
+        ALLOWED_UPDATES = ['password', 'age', 'gender', 'about', 'photoUrl', 'skills']
+
+        isUpdateAllowed = Object.keys(data).every((key) => ALLOWED_UPDATES.includes(key))
+
+        if (!isUpdateAllowed) {
+            return res.status(400).send({ message: "Invalid updates!" })
+        }
+
+        if (data?.skills?.length > 10) {
+            return res.status(400).send({ message: "Skills cannot exceed 10!" })
+        }
+
+        const user = await UserModel.findByIdAndUpdate(userId, data, { returnDocument: 'before', runValidators: true });
         console.log(user);
         if (!user) {
             return res.status(404).send({ message: "User not found" });
