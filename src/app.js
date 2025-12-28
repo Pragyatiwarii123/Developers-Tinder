@@ -1,32 +1,34 @@
 const express = require('express');
+const { connectDb } = require('./config/database');
+const { UserModel } = require('./models/user');
 
 const app = express();
 
 
-// app.get('/user/getProfile', (req, res, next) => {
-//     throw new Error('Simulated Server Error');
-//     res.send('Profile Data Fetched Successfully');
-// });
+app.post('/signup', async (req, res) => {
+    //Creating new instance of user model
+    const user = new UserModel({
+        firstName: "pragya",
+        lastName: "tiwari",
+        emailId: "pragya831@gmail.com",
+        password: "pragya@123",
+    })
 
-// app.use((err, req, res, next) => {
-//     console.error(err.stack);
-//     res.status(500).send('Something broke!');
-// });
-
-
-/////////////////////////. or. ///////////////////////
-
-
-app.get('/user/getProfile', (req, res, next) => {
     try {
-        throw new Error('Simulated Server Error');
-        res.send('Profile Data Fetched Successfully');
-    }catch (err) {
-        res.status(500).send('Something went wrong!');
+        await user.save();
+        res.send("User created successfully")
+    } catch (err) {
+        res.status(400).send({ message: "Error creating user", error: err.message });
     }
-    
 });
 
-app.listen(7777, () => {
-    console.log('Server is running on port 7777');
-})
+connectDb()
+    .then(() => {
+        console.log('Database Connected Successfully');
+        app.listen(7777, () => {
+            console.log('Server is running on port 7777');
+        })
+    }).catch((err) => {
+        console.error('Database Connection Failed', err);
+    });
+
