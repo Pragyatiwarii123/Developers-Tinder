@@ -56,7 +56,7 @@ authRouter.post('/login', async (req, res) => {
 authRouter.post('/logout', async (req, res) => {
     try {
         res.cookie('token', null, { expires: new Date(Date.now()) })
-        req.send("Logout successful");
+        res.send("Logout successful");
 
     } catch (err) {
         res.status(500).send({ message: "Error creating user", error: err.message });
