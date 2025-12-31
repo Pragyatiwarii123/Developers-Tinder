@@ -17,6 +17,17 @@ const validateSignUpData = (data) => {
     }
 }
 
+const validateProfileData = (data) => {
+
+    const allowedFiels= ['firstName', 'lastName', 'age', 'gender', 'about', 'photoUrl', 'skills'];
+
+    const isEditAllowed = Object.keys(data).every((key)=> allowedFiels.includes(key))
+
+    return isEditAllowed;
+
+}
+
 module.exports = {
-    validateSignUpData
+    validateSignUpData,
+    validateProfileData
 }

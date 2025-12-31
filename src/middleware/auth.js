@@ -5,7 +5,7 @@ const userAuth = async (req, res, next) => {
     const cookies = req.cookies;
     const { token } = cookies;
     if (!token) {
-        return res.status(401).send({ message: "Unauthorized: No token provided" });
+        return res.status(401).send({ message: "Unauthorized: Token Expired" });
     }
     const decodedMessage = jwt.verify(token, "devTinder@831$");
     const userId = decodedMessage._id;
