@@ -7,19 +7,20 @@ const authRouter = express.Router();
 
 
 authRouter.post('/signup', async (req, res) => {
-    //Never Trust req.body
-    validateSignUpData(req.body);
-    //Creating new instance of user model
-
-    const { firstName, lastName, emailId, password } = req.body;
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    req.body.password = hashedPassword;
-
-    const user = new UserModel(req.body)
-
     try {
+        //Never Trust req.body
+        validateSignUpData(req.body);
+        //Creating new instance of user model
+
+        const { firstName, lastName, emailId, password } = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        req.body.password = hashedPassword;
+
+        const user = new UserModel(req.body)
+
+
         await user.save();
         res.send("User created successfully")
     } catch (err) {
@@ -44,15 +45,13 @@ authRouter.post('/login', async (req, res) => {
         } else {
             const token = user.getJWT();
             res.cookie('token', token, { expires: new Date(Date.now() + 6 * 3600000) });
-            res.send("Login successful");
+            res.json({ message: "Login successful", data: user });
         }
 
     } catch (err) {
         res.status(500).send({ message: "Error creating user", error: err.message });
     }
 });
-
-
 authRouter.post('/logout', async (req, res) => {
     try {
         res.cookie('token', null, { expires: new Date(Date.now()) })
