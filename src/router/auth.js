@@ -38,7 +38,7 @@ authRouter.post('/login', async (req, res) => {
             return res.status(404).send({ message: "User not found" });
         }
 
-        const isPasswordMatch = user.validatePassword(password)
+        const isPasswordMatch = await user.validatePassword(password)
 
         if (!isPasswordMatch) {
             return res.status(400).send({ message: "Invalid credentials" });
