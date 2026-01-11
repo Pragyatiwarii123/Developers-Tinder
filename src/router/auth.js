@@ -20,9 +20,12 @@ authRouter.post('/signup', async (req, res) => {
 
         const user = new UserModel(req.body)
 
+        const savedUser = await user.save();
 
-        await user.save();
-        res.send("User created successfully")
+        const token = savedUser.getJWT();
+        res.cookie('token', token, { expires: new Date(Date.now() + 8 * 3600000) });
+
+        res.json({ message: "User created successfully", data: savedUser })
     } catch (err) {
         res.status(500).send({ message: "Error creating user", error: err.message });
     }
@@ -44,7 +47,7 @@ authRouter.post('/login', async (req, res) => {
             return res.status(400).send({ message: "Invalid credentials" });
         } else {
             const token = user.getJWT();
-            res.cookie('token', token, { expires: new Date(Date.now() + 6 * 3600000) });
+            res.cookie('token', token, { expires: new Date(Date.now() + 8 * 3600000) });
             res.json({ message: "Login successful", data: user });
         }
 
