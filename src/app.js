@@ -22,11 +22,10 @@ app.use(cookieParser());
 app.use(express.json());
 
 
-
-app.use("/", authRouter)
-app.use("/", profileRouter)
-app.use("/", requestsRouter)
-app.use("/", userRequestRouter)
+app.use("/api", authRouter)
+app.use("/api", profileRouter)
+app.use("/api", requestsRouter)
+app.use("/api", userRequestRouter)
 
 connectDb()
   .then(() => {
